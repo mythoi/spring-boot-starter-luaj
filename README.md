@@ -55,6 +55,6 @@ end
 ```
 
 
-<a href="https://github.com/nirenr/luaj">引用的luaj版本</a>，后续将在这个版本的基础上进行扩展
+<a href="https://github.com/nirenr/luaj">该项目引用的luaj版本</a>，后续将在这个版本的基础上进行扩展
 
 持续更新中...
