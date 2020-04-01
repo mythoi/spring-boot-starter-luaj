@@ -53,7 +53,17 @@ public class LuaDispatchGenProcessor extends AbstractProcessor {
     private void generateLuaDispatchController(String path){
 
         AnnotationSpec annotationSpecRequestMapping = AnnotationSpec.builder(ClassName.get("org.springframework.web.bind.annotation","RequestMapping"))
-                .addMember("value","$S","**").build();
+                .addMember("value","$S","**.lua")
+                .addMember("method","{$T.GET,$T.POST,$T.PUT,$T.DELETE,$T.HEAD,$T.OPTIONS,$T.PATCH,$T.TRACE}",
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
+                        ClassName.get("org.springframework.web.bind.annotation","RequestMethod"))
+                .build();
 
         AnnotationSpec annotationSpecResponseBody = AnnotationSpec.builder(ClassName.get("org.springframework.web.bind.annotation","ResponseBody")).build();
 
