@@ -39,11 +39,10 @@ function main(httpServletRequest, httpServletResponse, id)
 end
 
 ```
-浏览器访问http://localhost:8080/luaj/456
-控制台将依次打印
-123  org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1198b989
-456
-luatest
+浏览器访问http://localhost:8080/luaj/456  控制台将依次打印</br>
+>>123  org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1198b989</br>
+>>456</br>
+>>luatest</br>
 
 
 <a href="https://github.com/nirenr/luaj">引用的luaj版本</a>，后续将在这个版本的基础上进行扩展
