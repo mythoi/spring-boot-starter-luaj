@@ -3,11 +3,12 @@
 该项目是springboot的starter。目前包含两个注解，用法如下：
 @EnableLuaRoute注解开启lua文件路由，支持传入lua路径，默认使用的是classpath下的lua文件，http://localhsot:8080/index.lua 访问classpath下的index.lua文件
 
-@LuaRunner用于方法上：
+@LuaRunner用于方法上
 @LuaRunner(value = "test.lua", type = LuaRunnerConstant.LuaRunnerType.BEFORE,func = "main", params = {"aa"})。注解包含四个参数，value为lua文件路径，type为lua文件对java方法的切入类型，func为调用的lua函数，params为java给lua传参的字段。例如
 
 ```
-LuajtestApplication.java：
+LuajtestApplication.java文件：
+
 @SpringBootApplication
 @RestController
 @EnableLuaRoute
@@ -33,7 +34,6 @@ public class LuajtestApplication {
 test.lua文件：
 
 pritn(_aa,_applicationContext)
-
 function main(httpServletRequest, httpServletResponse, id)
     print(id)
 end
