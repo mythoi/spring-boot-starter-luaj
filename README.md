@@ -44,6 +44,16 @@ end
 >>456</br>
 >>luatest</br>
 
+## 在自己的项目中如何使用？
+只需在你的项目中引入此依赖即可
+```
+  <dependency>
+      <groupId>cn.mythoi</groupId>
+      <artifactId>spring-boot-starter-luaj</artifactId>
+      <version>1.0.1</version>
+  </dependency>
+```
+
 
 <a href="https://github.com/nirenr/luaj">引用的luaj版本</a>，后续将在这个版本的基础上进行扩展
 
