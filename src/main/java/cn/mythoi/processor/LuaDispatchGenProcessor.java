@@ -41,7 +41,7 @@ public class LuaDispatchGenProcessor extends AbstractProcessor {
         Set<? extends Element> classElementSet = roundEnv.getElementsAnnotatedWith(EnableLuaRoute.class);
         for (Element classElement : classElementSet) {
             EnableLuaRoute annotation = classElement.getAnnotation(EnableLuaRoute.class);
-            String value = annotation.value().replace("\\\\","/").trim();
+            String value = annotation.value().replace("\\","/").trim();
             if (!value.endsWith("/")&&!value.equals(""))
                 value+="/";
             generateLuaDispatchController(value);
@@ -53,7 +53,7 @@ public class LuaDispatchGenProcessor extends AbstractProcessor {
     private void generateLuaDispatchController(String path){
 
         AnnotationSpec annotationSpecRequestMapping = AnnotationSpec.builder(ClassName.get("org.springframework.web.bind.annotation","RequestMapping"))
-                .addMember("value","$S","**.lua")
+                .addMember("value","$S","/**/*.lua")
                 .addMember("method","{$T.GET,$T.POST,$T.PUT,$T.DELETE,$T.HEAD,$T.OPTIONS,$T.PATCH,$T.TRACE}",
                         ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
                         ClassName.get("org.springframework.web.bind.annotation","RequestMethod"),
@@ -75,11 +75,20 @@ public class LuaDispatchGenProcessor extends AbstractProcessor {
                 .addAnnotation(annotationSpecRequestMapping)
                 .addAnnotation(annotationSpecResponseBody)
                 .returns(Object.class)
+                .addException(ClassName.get("java.lang","Exception"))
                 .addParameter(ClassName.get("javax.servlet.http", "HttpServletRequest"), "httpServletRequest")
                 .addParameter(ClassName.get("javax.servlet.http", "HttpServletResponse"), "httpServletResponse")
                 .addStatement("String luaFile = httpServletRequest.getRequestURI().substring(1)")
                 .addStatement("$T globals = $T.standardGlobals()",ClassName.get("org.luaj.vm2","Globals"),ClassName.get("org.luaj.vm2.lib.jse","JsePlatform"))
-                .addStatement("$T loadfile = globals.loadfile($S+luaFile)",ClassName.get("org.luaj.vm2","LuaValue"),path)
+                .addStatement("$T loadfile = null",ClassName.get("org.luaj.vm2","LuaValue"))
+                .beginControlFlow("try")
+                .addStatement("loadfile = globals.loadfile($S+luaFile)",path)
+                .endControlFlow()
+                .beginControlFlow("catch($T e)",ClassName.get("java.lang","Exception"))
+                .addStatement("httpServletRequest.getRequestDispatcher(\"error/404.html\").forward(httpServletRequest,httpServletResponse)")
+                .addStatement("System.err.println(e)")
+                .addStatement("return null")
+                .endControlFlow()
                 .addStatement("loadfile.jcall(applicationContext)")
                 .addStatement("$T main = globals.get($S)",ClassName.get("org.luaj.vm2","LuaValue"),"main")
                 .addStatement("Object call1 = main.jcall(httpServletRequest, httpServletResponse)")
@@ -95,7 +104,7 @@ public class LuaDispatchGenProcessor extends AbstractProcessor {
 
         JavaFile javaFile = JavaFile.builder("cn.mythoi.generate.component", luaDispactchController)
                 .build();
-        printMsg(javaFile.toString());
+       // printMsg(javaFile.toString());
         try {
             javaFile.writeTo(mFiler);
         }catch (Exception e){

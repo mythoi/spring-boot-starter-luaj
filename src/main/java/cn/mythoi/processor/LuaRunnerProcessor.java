@@ -59,7 +59,7 @@ public class LuaRunnerProcessor extends AbstractProcessor {
         Set<? extends Element> methodElementSet = roundEnv.getElementsAnnotatedWith(LuaRunner.class);
         methodElementSet.forEach(element -> {
             LuaRunner annotation = element.getAnnotation(LuaRunner.class);
-            String annotationValue = annotation.value();
+            String annotationValue = annotation.value().replace("\\","/").trim();
             String annotationFuncName = annotation.func();
             String[] params = annotation.params();
             int annotationType = annotation.type();
@@ -112,7 +112,7 @@ public class LuaRunnerProcessor extends AbstractProcessor {
                     jcMethodDecl.body = treeMaker.Block(0, List.of(treeMaker.Try(jcMethodDecl.body, catchList, null)));
                     break;
             }
-            printMsg(jcMethodDecl.body.toString());
+            //printMsg(jcMethodDecl.body.toString());
         });
         return true;
     }

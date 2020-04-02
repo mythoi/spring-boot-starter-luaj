@@ -179,10 +179,11 @@ public class Globals extends LuaTable {
 	 * @throws LuaError if the file could not be loaded.
 	 */
 	public LuaValue loadfile(String filename) {
+
 		try {
 			return load(finder.findResource(filename), "@"+filename, "bt", this);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return error("load "+filename+": "+e);
 		}
 	}
