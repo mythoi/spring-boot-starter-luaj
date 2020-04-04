@@ -18,7 +18,9 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @Author mythoi
@@ -26,8 +28,6 @@ import java.util.Set;
  * @Description LuaRunner注解解析器
  * @Version V1.0
  **/
-@SupportedAnnotationTypes("cn.mythoi.annotation.LuaRunner")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class LuaRunnerProcessor extends AbstractProcessor {
 
     private Messager messager;
@@ -41,6 +41,8 @@ public class LuaRunnerProcessor extends AbstractProcessor {
     private JavacTrees trees;
 
     private Filer mFiler;
+
+    private Set<String> stringSet = new TreeSet<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -58,6 +60,16 @@ public class LuaRunnerProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<? extends Element> methodElementSet = roundEnv.getElementsAnnotatedWith(LuaRunner.class);
         methodElementSet.forEach(element -> {
+            String className = element.getEnclosingElement().toString();
+            JCTree.JCClassDecl jcClassDecl = (JCTree.JCClassDecl) trees.getTree(element.getEnclosingElement());
+            JCTree.JCAnnotation annotationAutowired = treeMaker.Annotation(JCTreeUtils.memberAccess("org.springframework.beans.factory.annotation.Autowired"), List.nil());
+            JCTree.JCVariableDecl simpleCallComponentVariableDecl = JCTreeUtils.makeVarDef(treeMaker.Modifiers(2), JCTreeUtils.memberAccess("cn.mythoi.component.SimpleCallComponent"), "__simpleCallComponent",null);
+            simpleCallComponentVariableDecl.mods.annotations=simpleCallComponentVariableDecl.mods.annotations.prepend(annotationAutowired);
+            if (stringSet.add(className)) {
+                jcClassDecl.defs = jcClassDecl.defs.prepend(simpleCallComponentVariableDecl);
+            }
+
+
             LuaRunner annotation = element.getAnnotation(LuaRunner.class);
             String annotationValue = annotation.value().replace("\\","/").trim();
             String annotationFuncName = annotation.func();
@@ -69,7 +81,12 @@ public class LuaRunnerProcessor extends AbstractProcessor {
                 return;
             }
             JCTree.JCVariableDecl globalsBlock = JCTreeUtils.makeVarDef(treeMaker.Modifiers(0), JCTreeUtils.memberAccess("org.luaj.vm2.Globals"), "globals", treeMaker.Apply(List.<JCTree.JCExpression>nil(), JCTreeUtils.memberAccess("org.luaj.vm2.lib.jse.JsePlatform.standardGlobals"), List.<JCTree.JCExpression>nil()));
-            JCTree.JCVariableDecl chunkBlock1 = JCTreeUtils.makeVarDef(treeMaker.Modifiers(0), JCTreeUtils.memberAccess("org.luaj.vm2.LuaValue"), "chunk1", treeMaker.Apply(List.nil(), JCTreeUtils.memberAccess("globals.loadfile"), List.of(treeMaker.Literal(annotationValue))));
+            //JCTree.JCVariableDecl chunkBlock1 = JCTreeUtils.makeVarDef(treeMaker.Modifiers(0), JCTreeUtils.memberAccess("org.luaj.vm2.LuaValue"), "chunk1", treeMaker.Apply(List.nil(), JCTreeUtils.memberAccess("globals.loadfile"), List.of(treeMaker.Literal(annotationValue))));
+            JCTree.JCVariableDecl chunkBlock1 = JCTreeUtils.makeVarDef(treeMaker.Modifiers(0), JCTreeUtils.memberAccess("org.luaj.vm2.LuaValue"), "chunk1", treeMaker.Apply(List.nil(), JCTreeUtils.memberAccess("globals.loadfile"), List.of(treeMaker.Binary(
+                    JCTree.Tag.PLUS,
+                    treeMaker.Apply(List.nil(),JCTreeUtils.memberAccess("__simpleCallComponent.getBaseRunnerPath"),List.nil()),
+                    treeMaker.Literal(annotationValue)
+                    ))));
             List<JCTree.JCExpression> paramsList = List.nil();
             List<JCTree.JCExpression> paramsTypeList = List.nil();
             for (JCTree.JCVariableDecl param : jcMethodDecl.params) {
@@ -135,6 +152,19 @@ public class LuaRunnerProcessor extends AbstractProcessor {
             printMsg(e.toString());
         }
     }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        Set<String> annotataions = new LinkedHashSet();
+        annotataions.add(LuaRunner.class.getCanonicalName());
+        return annotataions;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+
 
     private void printMsg(String msg) {
         messager.printMessage(Diagnostic.Kind.NOTE, msg);

@@ -14,16 +14,26 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "luaj")
 public class LuajProperties {
 
-    private String luaFilePath;
+    private String baseRoutePath;
+
+    private String baseRunnerPath;
 
     private String mapping;
 
-    public String getLuaFilePath() {
-        return luaFilePath;
+    public String getBaseRoutePath() {
+        return baseRoutePath;
     }
 
-    public void setLuaFilePath(String luaFilePath) {
-        this.luaFilePath = luaFilePath;
+    public void setBaseRoutePath(String baseRoutePath) {
+        this.baseRoutePath = baseRoutePath;
+    }
+
+    public String getBaseRunnerPath() {
+        return baseRunnerPath;
+    }
+
+    public void setBaseRunnerPath(String baseRunnerPath) {
+        this.baseRunnerPath = baseRunnerPath;
     }
 
     public String getMapping() {
@@ -37,7 +47,8 @@ public class LuajProperties {
     @Override
     public String toString() {
         return "LuajProperties{" +
-                "luaFilePath='" + luaFilePath + '\'' +
+                "baseRoutePath='" + baseRoutePath + '\'' +
+                ", baseRunnerPath='" + baseRunnerPath + '\'' +
                 ", mapping='" + mapping + '\'' +
                 '}';
     }

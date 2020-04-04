@@ -12,7 +12,8 @@ public class LuaRunnerConstant {
         public static final int BEFORE = 1;
         public static final int AFTER = 2;
         public static final int ALL = 3;
-        public static  final  int THROW = 4;
+        public static final int THROW = 4;
     }
+
     public static final String DEFAULTINVOKFUNC = "main";
 }

@@ -6,5 +6,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Documented
 public @interface EnableLuaRoute {
-    String value() default "";
 }

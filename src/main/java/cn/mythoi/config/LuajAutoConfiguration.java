@@ -19,8 +19,10 @@ import org.springframework.context.annotation.Scope;
  **/
 
 @Configuration
-@ComponentScan("cn.mythoi.generate.component")//扫描编译时生成的组件
-@ConditionalOnWebApplication//Web应用才生效
+//扫描编译时生成的组件和该库组件
+@ComponentScan({"cn.mythoi.generate.component","cn.mythoi.component"})
+//Web应用才生效
+@ConditionalOnWebApplication
 @EnableConfigurationProperties(LuajProperties.class)
 public class LuajAutoConfiguration {
 
