@@ -27,11 +27,11 @@ public class SimpleCallComponent {
     }
 
     public String getBaseRunnerPath(){
-        String luaRunnerath = luajProperties.getBaseRunnerPath();
-        luaRunnerath = (luaRunnerath==null?"":luaRunnerath).replace("\\","/").trim();
-        if (!luaRunnerath.endsWith("/")&&!"".equals(luaRunnerath)) {
-            luaRunnerath += "/";
+        String luaRunnerPath = luajProperties.getBaseRunnerPath();
+        luaRunnerPath = (luaRunnerPath==null?"":luaRunnerPath).replace("\\","/").trim();
+        if (!luaRunnerPath.endsWith("/")&&!"".equals(luaRunnerPath)) {
+            luaRunnerPath += "/";
         }
-        return luaRunnerath;
+        return luaRunnerPath;
     }
 }
